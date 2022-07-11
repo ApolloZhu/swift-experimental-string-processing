@@ -44,6 +44,8 @@ extension MEProgram {
     var unresolvedReferences: [ReferenceID: [InstructionAddress]] = [:]
     var referencedCaptureOffsets: [ReferenceID: Int] = [:]
 
+    var debugInfoProviders: [InstructionAddress: DSLDebugInfoProvider] = [:]
+
     var captureCount: Int {
       // We currently deduce the capture count from the capture register number.
       nextCaptureRegister.rawValue
@@ -250,6 +252,11 @@ extension MEProgram.Builder {
     }
     buildBackreference(.init(index))
   }
+  
+  mutating func buildDebuggable(_ debugInfoProvider: DSLDebugInfoProvider) {
+    debugInfoProviders[InstructionAddress(rawValue: instructions.count)] = debugInfoProvider
+    instructions.append(.init(.provideDebugInfo))
+  }
 
   // TODO: Mutating because of fail address fixup, drop when
   // that's removed
@@ -321,6 +328,7 @@ extension MEProgram.Builder {
       staticTransformFunctions: transformFunctions,
       staticMatcherFunctions: matcherFunctions,
       registerInfo: regInfo,
+      debugInfoProviders: debugInfoProviders,
       captureList: captureList,
       referencedCaptureOffsets: referencedCaptureOffsets,
       initialOptions: initialOptions)

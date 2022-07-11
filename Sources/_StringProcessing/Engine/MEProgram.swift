@@ -41,6 +41,7 @@ struct MEProgram {
   var registerInfo: RegisterInfo
 
   var enableTracing: Bool = false
+  var debugInfoProviders: [InstructionAddress: DSLDebugInfoProvider]
 
   let captureList: CaptureList
   let referencedCaptureOffsets: [ReferenceID: Int]

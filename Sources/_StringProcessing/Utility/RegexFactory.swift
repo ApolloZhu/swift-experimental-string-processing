@@ -200,4 +200,13 @@ public struct _RegexFactory {
       CaptureTransform(transform)
     ))
   }
+  
+  @_spi(RegexBuilder)
+  // TODO: ApolloZhu availability marker
+  public func debuggable<Output>(
+    _ component: some RegexComponent,
+    _ debugInfoProvider: DSLDebugInfoProvider
+  ) -> Regex<Output> {
+    .init(node: .debuggable(component.regex.root, debugInfoProvider: debugInfoProvider))
+  }
 }
