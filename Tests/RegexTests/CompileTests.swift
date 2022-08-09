@@ -48,6 +48,7 @@ enum DecodedInstr {
   case captureValue
   case builtinAssertion
   case builtinCharacterClass
+  case provideDebugInfo
 }
 
 extension DecodedInstr {
@@ -136,6 +137,8 @@ extension DecodedInstr {
         return .builtinAssertion
       case .builtinCharacterClass:
         return .builtinCharacterClass
+      case .provideDebugInfo:
+        return .provideDebugInfo
 }
   }
 }
