@@ -594,7 +594,6 @@ extension Processor {
       builtinCharacterClass()
       
     case .provideDebugInfo:
-      // TODO: ApolloZhu better debug context
       let context = (
         input: input,
         currentPosition: currentPosition,
@@ -613,17 +612,4 @@ extension Processor {
       controller.step()
     }
   }
-}
-
-fileprivate struct DebugInfo {
-  var input: String
-  var currentPosition: String.Index
-  var substringToMatch: String
-  var subjectBounds, searchBounds: Range<String.Index>
-  var matchMode: MatchMode
-  var currentInstruction: Instruction
-  var allInstructions: InstructionList<Instruction>
-  var savePoints: [Processor.SavePoint]
-  var callStack: [InstructionAddress]
-  var storedCaptures: Array<Processor._StoredCapture>
 }
