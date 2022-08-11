@@ -595,7 +595,7 @@ extension Processor {
       
     case .provideDebugInfo:
       // TODO: ApolloZhu better debug context
-      debugInfoProviders[currentPC]!(context: DebugInfo(
+      let context = (
         input: input,
         currentPosition: currentPosition,
         substringToMatch: String(input[currentPosition...]),
@@ -606,7 +606,10 @@ extension Processor {
         allInstructions: instructions,
         savePoints: savePoints,
         callStack: callStack,
-        storedCaptures: storedCaptures))
+        storedCaptures: storedCaptures.map {
+          return ($0.range.map { String(input[$0]) }, $0.value)
+        })
+      debugInfoProviders[currentPC]!(context: context)
       controller.step()
     }
   }
