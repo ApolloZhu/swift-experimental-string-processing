@@ -595,18 +595,17 @@ extension Processor {
       
     case .provideDebugInfo:
       let context = (
-        input: input,
-        currentPosition: currentPosition,
-        substringToMatch: String(input[currentPosition...]),
-        subjectBounds: subjectBounds,
-        searchBounds: searchBounds,
         matchMode: matchMode,
-        currentInstruction: instructions[controller.pc],
-        allInstructions: instructions,
-        savePoints: savePoints,
-        callStack: callStack,
+        input: String(input[searchBounds]),
+        substringToMatch: String(input[currentPosition...]),
+        backtrackingLocations: savePoints.compactMap {
+          $0.pos.map { String(input[$0...]) }
+        },
         storedCaptures: storedCaptures.map {
-          return ($0.range.map { String(input[$0]) }, $0.value)
+          // This is to reduce the amount of useless entries when expanded.
+          if let value = $0.value { return value }
+          else if let range = $0.range { return String(input[range]) }
+          else { return nil as String? as Any }
         })
       debugInfoProviders[currentPC]!(context: context)
       controller.step()
