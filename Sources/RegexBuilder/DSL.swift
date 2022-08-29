@@ -177,10 +177,18 @@ public struct AlternationBuilder {
   // TODO: ApolloZhu availability marker
   @_alwaysEmitIntoClient
   public static func buildExpression<R: RegexComponent>(
-    _ regex: R,
-    debugInfoProvider: DSLDebugInfoProvider? = nil
+    _ regex: R
   ) -> Component<R> {
-    .init(value: regex, debugInfoProvider: debugInfoProvider)
+    .init(value: regex)
+  }
+  
+  // TODO: ApolloZhu availability marker
+  @_alwaysEmitIntoClient
+  public static func buildDebuggable<R>(
+    _ component: Component<R>,
+    debugInfoProvider: DSLDebugInfoProvider
+  ) -> Component<R> {
+    .init(value: component.value, debugInfoProvider: debugInfoProvider)
   }
 }
 

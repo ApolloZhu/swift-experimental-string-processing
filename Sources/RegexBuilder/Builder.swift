@@ -17,11 +17,12 @@ public enum RegexComponentBuilder {
   // TODO: ApolloZhu doc
   // TODO: ApolloZhu availability marker
   public struct Component<Value: RegexComponent>: RegexComponent {
-    private let value: Value
+    @usableFromInline
+    let value: Value
     private let debugInfoProvider: DSLDebugInfoProvider?
     
     @usableFromInline
-    init(value: Value, debugInfoProvider: DSLDebugInfoProvider?) {
+    init(value: Value, debugInfoProvider: DSLDebugInfoProvider? = nil) {
       self.value = value
       self.debugInfoProvider = debugInfoProvider
     }
@@ -44,18 +45,20 @@ public enum RegexComponentBuilder {
     component.regex
   }
   
-  // TODO: ApolloZhu is optional callback a good idea? (no debugInfoProvider other than -Onone
-  // TODO: ApolloZhu autocomplete or near miss checker?
-  // TODO: ApolloZhu what if they only have one version of buildExpression that takes debugInfoProvider?
-  // They'll probably get a compile time error in release mode, so not a problem?
-  // Do we allow a buildExpression with debugInfoProvider only (and no buildExpression in other cases?)
-  // TODO: ApolloZhu @escaping checker?
   // TODO: ApolloZhu availability marker
   @_alwaysEmitIntoClient
   public static func buildExpression<R: RegexComponent>(
-    _ regex: R,
-    debugInfoProvider: DSLDebugInfoProvider? = nil
+    _ regex: R
   ) -> Component<R> {
-    .init(value: regex, debugInfoProvider: debugInfoProvider)
+    .init(value: regex)
+  }
+  
+  // TODO: ApolloZhu availability marker
+  @_alwaysEmitIntoClient
+  public static func buildDebuggable<R>(
+    _ component: Component<R>,
+    debugInfoProvider: DSLDebugInfoProvider
+  ) -> Component<R> {
+    .init(value: component.value, debugInfoProvider: debugInfoProvider)
   }
 }
