@@ -16,22 +16,12 @@
 public enum RegexComponentBuilder {
   // TODO: ApolloZhu doc
   // TODO: ApolloZhu availability marker
-  public struct Component<Value: RegexComponent>: RegexComponent {
-    @usableFromInline
-    let value: Value
-    private let debugInfoProvider: DSLDebugInfoProvider?
+  public struct Component<RegexOutput>: RegexComponent {
+    public let regex: Regex<RegexOutput>
     
     @usableFromInline
-    init(value: Value, debugInfoProvider: DSLDebugInfoProvider? = nil) {
-      self.value = value
-      self.debugInfoProvider = debugInfoProvider
-    }
-    
-    public var regex: Regex<Value.RegexOutput> {
-      if let debugInfoProvider {
-        return _RegexFactory().debuggable(value, debugInfoProvider)
-      }
-      return value.regex
+    init(regex: Regex<RegexOutput>) {
+      self.regex = regex
     }
   }
   
@@ -48,17 +38,34 @@ public enum RegexComponentBuilder {
   // TODO: ApolloZhu availability marker
   @_alwaysEmitIntoClient
   public static func buildExpression<R: RegexComponent>(
-    _ regex: R
-  ) -> Component<R> {
-    .init(value: regex)
+    _ expression: R
+  ) -> Component<R.RegexOutput> {
+    .init(regex: expression.regex)
   }
   
   // TODO: ApolloZhu availability marker
   @_alwaysEmitIntoClient
-  public static func buildDebuggable<R>(
-    _ component: Component<R>,
+  public static func buildFinalResult<R: RegexComponent>(
+    _ component: R
+  ) -> R {
+    component
+  }
+  
+  @_alwaysEmitIntoClient
+  public static func buildDebuggable<Output>(
+    _ component: Component<Output>,
     debugInfoProvider: DSLDebugInfoProvider
-  ) -> Component<R> {
-    .init(value: component.value, debugInfoProvider: debugInfoProvider)
+  ) -> Component<Output> {
+    .init(regex: makeFactory()
+      .debuggable(component.regex, debugInfoProvider))
+  }
+  
+  // TODO: ApolloZhu availability marker
+  @_alwaysEmitIntoClient
+  public static func buildDebuggable<Output>(
+    _ component: Regex<Output>,
+    debugInfoProvider: DSLDebugInfoProvider
+  ) -> Regex<Output> {
+    makeFactory().debuggableFinalResult(component.regex, debugInfoProvider)
   }
 }

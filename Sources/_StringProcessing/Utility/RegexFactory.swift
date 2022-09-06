@@ -201,12 +201,22 @@ public struct _RegexFactory {
     ))
   }
   
-  @_spi(RegexBuilder)
   // TODO: ApolloZhu availability marker
   public func debuggable<Output>(
     _ component: some RegexComponent,
     _ debugInfoProvider: DSLDebugInfoProvider
   ) -> Regex<Output> {
-    .init(node: .debuggable(component.regex.root, debugInfoProvider: debugInfoProvider))
+    .init(node: .debuggable(component.regex.root,
+                            debugInfoProvider: debugInfoProvider))
+  }
+  
+  // TODO: ApolloZhu availability marker
+  public func debuggableFinalResult<Output>(
+    _ component: some RegexComponent,
+    _ debugInfoProvider: DSLDebugInfoProvider
+  ) -> Regex<Output> {
+    .init(node: component.regex.root
+      .appending(.debuggable(.empty,
+                             debugInfoProvider: debugInfoProvider)))
   }
 }

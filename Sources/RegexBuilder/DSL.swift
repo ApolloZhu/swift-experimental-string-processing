@@ -177,18 +177,37 @@ public struct AlternationBuilder {
   // TODO: ApolloZhu availability marker
   @_alwaysEmitIntoClient
   public static func buildExpression<R: RegexComponent>(
-    _ regex: R
-  ) -> Component<R> {
-    .init(value: regex)
+    _ expression: R
+  ) -> Component<R.RegexOutput> {
+    .init(regex: expression.regex)
   }
   
   // TODO: ApolloZhu availability marker
   @_alwaysEmitIntoClient
-  public static func buildDebuggable<R>(
-    _ component: Component<R>,
+  public static func buildFinalResult<R: RegexComponent>(
+    _ component: R
+  ) -> R {
+    component
+  }
+  
+  // TODO: ApolloZhu availability marker
+  @_alwaysEmitIntoClient
+  public static func buildDebuggable<Output>(
+    _ component: Component<Output>,
     debugInfoProvider: DSLDebugInfoProvider
-  ) -> Component<R> {
-    .init(value: component.value, debugInfoProvider: debugInfoProvider)
+  ) -> Component<Output> {
+    .init(regex: makeFactory()
+      .debuggable(component.regex, debugInfoProvider))
+  }
+  
+  @_alwaysEmitIntoClient
+  @_disfavoredOverload
+  public static func buildDebuggable<Output>(
+    _ component: ChoiceOf<Output>,
+    debugInfoProvider: DSLDebugInfoProvider
+  ) -> ChoiceOf<Output> {
+    .init(makeFactory()
+      .debuggableFinalResult(component.regex, debugInfoProvider))
   }
 }
 
