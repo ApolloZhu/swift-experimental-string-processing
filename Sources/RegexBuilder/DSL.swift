@@ -201,7 +201,6 @@ public struct AlternationBuilder {
   }
   
   @_alwaysEmitIntoClient
-  @_disfavoredOverload
   public static func buildDebuggable<Output>(
     _ component: ChoiceOf<Output>,
     debugInfoProvider: DSLDebugInfoProvider
