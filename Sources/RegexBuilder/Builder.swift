@@ -14,17 +14,6 @@
 @available(SwiftStdlib 5.7, *)
 @resultBuilder
 public enum RegexComponentBuilder {
-  // TODO: ApolloZhu doc
-  // TODO: ApolloZhu availability marker
-  public struct Component<RegexOutput>: RegexComponent {
-    public let regex: Regex<RegexOutput>
-    
-    @usableFromInline
-    init(regex: Regex<RegexOutput>) {
-      self.regex = regex
-    }
-  }
-  
   public static func buildBlock() -> Regex<Substring> {
     _RegexFactory().empty()
   }
@@ -39,8 +28,8 @@ public enum RegexComponentBuilder {
   @_alwaysEmitIntoClient
   public static func buildExpression<R: RegexComponent>(
     _ expression: R
-  ) -> Component<R.RegexOutput> {
-    .init(regex: expression.regex)
+  ) -> Regex<R.RegexOutput> {
+    expression.regex
   }
   
   // TODO: ApolloZhu availability marker
@@ -51,21 +40,22 @@ public enum RegexComponentBuilder {
     component
   }
   
+  // TODO: ApolloZhu availability marker
   @_alwaysEmitIntoClient
   public static func buildDebuggable<Output>(
-    _ component: Component<Output>,
+    component: Regex<Output>,
     debugInfoProvider: DSLDebugInfoProvider
-  ) -> Component<Output> {
-    .init(regex: makeFactory()
-      .debuggable(component.regex, debugInfoProvider))
+  ) -> Regex<Output> {
+    makeFactory().debuggable(component.regex, debugInfoProvider)
   }
   
   // TODO: ApolloZhu availability marker
   @_alwaysEmitIntoClient
   public static func buildDebuggable<Output>(
-    _ component: Regex<Output>,
+    finalResult: Regex<Output>,
     debugInfoProvider: DSLDebugInfoProvider
   ) -> Regex<Output> {
-    makeFactory().debuggableFinalResult(component.regex, debugInfoProvider)
+    makeFactory()
+      .debuggableFinalResult(finalResult.regex, debugInfoProvider)
   }
 }

@@ -165,8 +165,6 @@ public struct Repeat<Output>: _BuiltinRegexComponent {
 @available(SwiftStdlib 5.7, *)
 @resultBuilder
 public struct AlternationBuilder {
-  public typealias Component<R: RegexComponent> = RegexComponentBuilder.Component<R>
-  
   @_disfavoredOverload
   public static func buildPartialBlock<R: RegexComponent>(
     first component: R
@@ -178,8 +176,8 @@ public struct AlternationBuilder {
   @_alwaysEmitIntoClient
   public static func buildExpression<R: RegexComponent>(
     _ expression: R
-  ) -> Component<R.RegexOutput> {
-    .init(regex: expression.regex)
+  ) -> Regex<R.RegexOutput> {
+    expression.regex
   }
   
   // TODO: ApolloZhu availability marker
@@ -193,20 +191,20 @@ public struct AlternationBuilder {
   // TODO: ApolloZhu availability marker
   @_alwaysEmitIntoClient
   public static func buildDebuggable<Output>(
-    _ component: Component<Output>,
+    component: Regex<Output>,
     debugInfoProvider: DSLDebugInfoProvider
-  ) -> Component<Output> {
-    .init(regex: makeFactory()
-      .debuggable(component.regex, debugInfoProvider))
+  ) -> Regex<Output> {
+    makeFactory().debuggable(component.regex, debugInfoProvider)
   }
   
   @_alwaysEmitIntoClient
   public static func buildDebuggable<Output>(
-    _ component: ChoiceOf<Output>,
+    finalResult: ChoiceOf<Output>,
     debugInfoProvider: DSLDebugInfoProvider
   ) -> ChoiceOf<Output> {
     .init(makeFactory()
-      .debuggableFinalResult(component.regex, debugInfoProvider))
+      .debuggableFinalResult(finalResult.regex,
+                             debugInfoProvider))
   }
 }
 
